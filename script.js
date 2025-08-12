@@ -1,15 +1,13 @@
 import { SUPABASE_URL, SUPABASE_KEY } from './config.js';
 
-// create supabase client from the global SDK
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let tableData = [];
 
-// DOM
 const form = document.getElementById('dataForm');
 const tableBody = document.querySelector('#dataTable tbody');
 
-// Load initial data from Supabase (fallback to localStorage on error)
+
 async function loadData() {
   try {
     const { data, error } = await supabase
@@ -45,7 +43,6 @@ function renderTable() {
   localStorage.setItem('employeeData', JSON.stringify(tableData));
 }
 
-// simple text escaper
 function escapeHtml(text) {
   if (text == null) return '';
   return String(text)
@@ -56,7 +53,7 @@ function escapeHtml(text) {
     .replaceAll("'", '&#039;');
 }
 
-// Insert new employee
+
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -68,13 +65,12 @@ form.addEventListener('submit', async (e) => {
     custom_id: document.getElementById('custom_id').value.trim()
   };
 
-  // Basic validation
   if (!newRow.name || !newRow.custom_id) return alert('Please provide name and custom ID');
 
   try {
     const { error } = await supabase.from('employees').insert([newRow]);
     if (error) throw error;
-    // no need to update local tableData here — realtime will push the insert
+   
     form.reset();
   } catch (err) {
     // console.error('Insert failed:', err.message || err);
@@ -85,20 +81,18 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
-// Delete function exposed to window so button onclick works
 window.deleteRow = async function (id) {
   if (!confirm('Delete this record?')) return;
   try {
     const { error } = await supabase.from('employees').delete().eq('id', id);
     if (error) throw error;
-    // deletion reflected by realtime subscription
+    
   } catch (err) {
     console.error('Delete failed:', err.message || err);
     alert('Delete failed — check console.');
   }
 };
 
-// Subscribe to realtime changes on employees table
 function subscribeRealtime() {
   supabase
     .channel('public:employees')
@@ -108,13 +102,13 @@ function subscribeRealtime() {
       (payload) => {
         const type = payload.eventType;
         if (type === 'INSERT') {
-          // new row (push to tableData)
+          
           tableData.push(payload.new);
         } else if (type === 'DELETE') {
-          // remove by id
+          
           tableData = tableData.filter((r) => r.id !== payload.old.id);
         } else if (type === 'UPDATE') {
-          // update existing row (optional future support)
+         
           tableData = tableData.map((r) => (r.id === payload.new.id ? payload.new : r));
         }
         renderTable();
@@ -123,6 +117,6 @@ function subscribeRealtime() {
     .subscribe();
 }
 
-// Start
+
 loadData();
 subscribeRealtime();
