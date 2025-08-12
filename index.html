@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Realtime Employees Table</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h2>Employees Table (Realtime)</h2>
+
+  <form id="dataForm" autocomplete="off">
+    <input type="text" id="name" placeholder="Name" required />
+    <input type="number" id="age" placeholder="Age" required min="0" />
+    <input type="number" id="salary" placeholder="Salary" required min="0" />
+    <input type="text" id="gender" placeholder="Gender" required />
+    <input type="text" id="custom_id" placeholder="Custom ID" required />
+    <button type="submit">Add</button>
+  </form>
+
+  <table id="dataTable" aria-label="Employees">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Salary</th>
+        <th>Gender</th>
+        <th>Custom ID</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- Supabase JS SDK (v2) -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <!-- Our module script -->
+  <script type="module" src="script.js"></script>
+</body>
+</html>
